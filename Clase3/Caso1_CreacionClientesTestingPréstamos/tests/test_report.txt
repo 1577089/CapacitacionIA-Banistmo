@@ -1,0 +1,31 @@
+UNittest report
+Generated: 2025-12-11T09:32:38.664719
+Duration (s): 0.054
+Summary:
+{
+  "testsRun": 13,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "wasSuccessful": true
+}
+
+Full output:
+test_antiguedad_vs_edad (test_clients.TestClientsDataset.test_antiguedad_vs_edad) ... ok
+test_cedula_format (test_clients.TestClientsDataset.test_cedula_format) ... ok
+test_city_distribution (test_clients.TestClientsDataset.test_city_distribution) ... ok
+test_count_1000 (test_clients.TestClientsDataset.test_count_1000) ... ok
+test_debt_consistency (test_clients.TestClientsDataset.test_debt_consistency) ... ok
+test_fecha_nacimiento_range (test_clients.TestClientsDataset.test_fecha_nacimiento_range) ... ok
+test_historial_distribution (test_clients.TestClientsDataset.test_historial_distribution) ... ok
+test_id_format (test_clients.TestClientsDataset.test_id_format) ... ok
+test_ingreso_and_saldo_ranges (test_clients.TestClientsDataset.test_ingreso_and_saldo_ranges) ... ok
+test_score_ranges_per_historial (test_clients.TestClientsDataset.test_score_ranges_per_historial) ... ok
+test_telefono_format (test_clients.TestClientsDataset.test_telefono_format) ... ok
+test_tipo_empleo_distribution (test_clients.TestClientsDataset.test_tipo_empleo_distribution) ... ok
+test_unique_cedula_and_email (test_clients.TestClientsDataset.test_unique_cedula_and_email) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.046s
+
+OK

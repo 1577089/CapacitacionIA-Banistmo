@@ -1,0 +1,10 @@
+ID,Tipo,Descripcion
+CP-001/CP-002,Positivo,"Verifica la carga exitosa y el conteo total de 10,000 registros."
+CP-003,Positivo,"Valida los formatos de IDs, fechas y tipos de datos en una muestra de 100 registros."
+CP-004,Positivo,"Valida la distribución estadística aproximada de tipos de transacción, estados y canales."
+CP-005,Positivo,"Verifica que las transferencias no sean a la misma cuenta y que depósitos/retiros no tengan cuenta de destino."
+CP-006,Positivo,"Verifica que ninguna cuenta exceda el límite de 50 transacciones por día."
+CP-007,Positivo,"Verifica que los montos de las transacciones se encuentren dentro de los rangos definidos para cada tipo."
+CN-001,Negativo,"Verifica que la base de datos rechace la inserción de un ID de transacción duplicado."
+CN-002,Negativo,"Verifica que la base de datos rechace la inserción de un monto no positivo (cero) basado en la restricción CHECK."
+CN-003,Negativo,"Verifica que la base de datos rechace la inserción de un valor NULL en un campo obligatorio (NOT NULL)."

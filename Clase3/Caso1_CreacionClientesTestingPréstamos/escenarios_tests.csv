@@ -1,0 +1,14 @@
+test_name,classname,status,message,timestamp
+test_antiguedad_vs_edad,test_clients.TestClientsDataset.test_antiguedad_vs_edad,ok,,2025-12-11T09:32:38.664719
+test_cedula_format,test_clients.TestClientsDataset.test_cedula_format,ok,,2025-12-11T09:32:38.664719
+test_city_distribution,test_clients.TestClientsDataset.test_city_distribution,ok,,2025-12-11T09:32:38.664719
+test_count_1000,test_clients.TestClientsDataset.test_count_1000,ok,,2025-12-11T09:32:38.664719
+test_debt_consistency,test_clients.TestClientsDataset.test_debt_consistency,ok,,2025-12-11T09:32:38.664719
+test_fecha_nacimiento_range,test_clients.TestClientsDataset.test_fecha_nacimiento_range,ok,,2025-12-11T09:32:38.664719
+test_historial_distribution,test_clients.TestClientsDataset.test_historial_distribution,ok,,2025-12-11T09:32:38.664719
+test_id_format,test_clients.TestClientsDataset.test_id_format,ok,,2025-12-11T09:32:38.664719
+test_ingreso_and_saldo_ranges,test_clients.TestClientsDataset.test_ingreso_and_saldo_ranges,ok,,2025-12-11T09:32:38.664719
+test_score_ranges_per_historial,test_clients.TestClientsDataset.test_score_ranges_per_historial,ok,,2025-12-11T09:32:38.664719
+test_telefono_format,test_clients.TestClientsDataset.test_telefono_format,ok,,2025-12-11T09:32:38.664719
+test_tipo_empleo_distribution,test_clients.TestClientsDataset.test_tipo_empleo_distribution,ok,,2025-12-11T09:32:38.664719
+test_unique_cedula_and_email,test_clients.TestClientsDataset.test_unique_cedula_and_email,ok,,2025-12-11T09:32:38.664719
