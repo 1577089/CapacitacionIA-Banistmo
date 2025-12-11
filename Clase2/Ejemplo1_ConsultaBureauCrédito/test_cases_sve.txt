@@ -1,0 +1,495 @@
+========================================================================================================
+CASOS DE PRUEBA - BUREAU DE CRÉDITO
+Formato SVE (Separated Values Export)
+Fecha: 2025-12-09
+Total Tests: 15 casos principales + 6 casos adicionales = 21 tests
+========================================================================================================
+
+ID: TC-BC-001
+Escenario: Path feliz - Cliente con buen historial crediticio
+Prioridad: P0 - Crítica
+Estado: Automatizado
+Archivo: test_bureau_happy_path.py
+Función: test_tc_bc_001_cliente_buen_historial
+Markers: @pytest.mark.critical, @pytest.mark.smoke, @pytest.mark.integration
+Precondiciones:
+  - API Bureau disponible
+  - Cliente existe en BD
+  - Cliente tiene historial positivo
+Pasos:
+  1. Oficial ingresa documento válido
+  2. Sistema llama POST /api/bureau/consultar
+  3. Bureau retorna score y estado
+Resultado Esperado:
+  - Status 200
+  - Score ≥ 700
+  - Estado: "APROBADO"
+  - Sin deudas en mora
+  - Tiempo respuesta < 3s
+Datos de Prueba:
+  documento: "1234567890"
+  tipo_documento: "CC"
+  expected_score_min: 700
+  expected_estado: "APROBADO"
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-002
+Escenario: Cliente con deudas activas pero al día
+Prioridad: P0 - Crítica
+Estado: Automatizado
+Archivo: test_bureau_happy_path.py
+Función: test_tc_bc_002_cliente_deudas_activas_al_dia
+Markers: @pytest.mark.critical, @pytest.mark.regression, @pytest.mark.integration
+Precondiciones:
+  - API Bureau disponible
+  - Cliente tiene préstamos vigentes
+  - Sin moras actuales
+Pasos:
+  1. Consultar cliente con préstamos activos
+  2. Verificar detalle de obligaciones
+  3. Validar estado de pagos
+Resultado Esperado:
+  - Status 200
+  - Score: 650-699
+  - Lista de deudas activas
+  - Estado: "REVISAR"
+  - Monto_deuda_total visible
+Datos de Prueba:
+  documento: "2345678901"
+  tipo_documento: "CC"
+  expected_score_min: 650
+  expected_score_max: 699
+  expected_estado: "REVISAR"
+  expected_deuda: 50000000
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-003
+Escenario: Cliente con mora actual
+Prioridad: P0 - Crítica
+Estado: Automatizado
+Archivo: test_bureau_happy_path.py
+Función: test_tc_bc_003_cliente_con_mora_actual
+Markers: @pytest.mark.critical, @pytest.mark.regression, @pytest.mark.integration
+Precondiciones:
+  - Cliente registrado
+  - Cliente tiene pagos vencidos
+Pasos:
+  1. Consultar cliente moroso
+  2. Verificar días de mora
+  3. Validar alertas de riesgo
+Resultado Esperado:
+  - Status 200
+  - Score < 500
+  - Estado: "RECHAZADO"
+  - dias_mora > 0
+  - Alertas de riesgo activas
+Datos de Prueba:
+  documento: "3456789012"
+  tipo_documento: "CC"
+  expected_score_max: 500
+  expected_estado: "RECHAZADO"
+  expected_dias_mora_min: 1
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-004
+Escenario: Cliente en lista de riesgo CIFIN
+Prioridad: P0 - Crítica
+Estado: Automatizado
+Archivo: test_bureau_happy_path.py
+Función: test_tc_bc_004_cliente_en_lista_cifin
+Markers: @pytest.mark.critical, @pytest.mark.regression, @pytest.mark.integration
+Precondiciones:
+  - Cliente reportado en CIFIN
+  - API Bureau disponible
+Pasos:
+  1. Consultar documento reportado
+  2. Verificar flag de lista negra
+  3. Validar razón del reporte
+Resultado Esperado:
+  - Status 200
+  - en_cifin: true
+  - Estado: "RECHAZADO"
+  - razon_reporte visible
+  - Bloqueo automático
+Datos de Prueba:
+  documento: "4567890123"
+  tipo_documento: "CC"
+  expected_estado: "RECHAZADO"
+  expected_en_cifin: true
+  expected_razon: "Fraude 2023"
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-005
+Escenario: Validación documento de identidad inválido
+Prioridad: P1 - Alta
+Estado: Automatizado
+Archivo: test_bureau_validations.py
+Función: test_tc_bc_005_documento_invalido_caracteres_especiales
+Markers: @pytest.mark.high, @pytest.mark.validation, @pytest.mark.regression
+Precondiciones:
+  - Sistema activo
+Pasos:
+  1. Ingresar documento con caracteres especiales
+  2. Enviar request al Bureau
+Resultado Esperado:
+  - Status 422 (Validation Error)
+  - Mensaje: "Documento inválido"
+  - No consulta Bureau
+  - Log de validación
+Datos de Prueba:
+  documento: "123-456*789"
+  tipo_documento: "CC"
+  expected_status: 422
+  expected_error: "Documento inválido"
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-006
+Escenario: Validación documento con longitud incorrecta
+Prioridad: P1 - Alta
+Estado: Automatizado
+Archivo: test_bureau_validations.py
+Función: test_tc_bc_006_documento_longitud_incorrecta
+Markers: @pytest.mark.high, @pytest.mark.validation, @pytest.mark.regression
+Precondiciones:
+  - Sistema activo
+Pasos:
+  1. Ingresar documento < 6 dígitos
+  2. Enviar solicitud
+Resultado Esperado:
+  - Status 422
+  - Error: "Longitud inválida"
+  - Rango esperado: 6-12 dígitos
+Datos de Prueba:
+  documento: "12345"
+  tipo_documento: "CC"
+  expected_status: 422
+  expected_error: "Longitud inválida"
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-007
+Escenario: Tipo de documento no válido
+Prioridad: P1 - Alta
+Estado: Automatizado
+Archivo: test_bureau_validations.py
+Función: test_tc_bc_007_tipo_documento_invalido
+Markers: @pytest.mark.high, @pytest.mark.validation, @pytest.mark.regression
+Precondiciones:
+  - Sistema activo
+Pasos:
+  1. Enviar tipo_documento no soportado
+  2. Intentar consulta
+Resultado Esperado:
+  - Status 422
+  - Error: "Tipo documento no válido"
+  - Tipos válidos: CC, CE, NIT, PAS
+Datos de Prueba:
+  documento: "1234567890"
+  tipo_documento: "XXX"
+  expected_status: 422
+  expected_error: "Tipo documento no válido"
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-008
+Escenario: Servicio Bureau caído (timeout 5 segundos)
+Prioridad: P0 - Crítica
+Estado: Automatizado
+Archivo: test_bureau_errors.py
+Función: test_tc_bc_008_timeout_5_segundos
+Markers: @pytest.mark.critical, @pytest.mark.timeout(10), @pytest.mark.regression
+Precondiciones:
+  - API Bureau no disponible
+  - Timeout configurado en 5s
+Pasos:
+  1. Intentar consulta
+  2. Esperar timeout
+  3. Verificar manejo de error
+Resultado Esperado:
+  - Status 503 (Service Unavailable) o Timeout Exception
+  - Mensaje: "Bureau no disponible"
+  - Retry después de 30s
+  - Log de incidencia
+Datos de Prueba:
+  documento: "5678901234"
+  tipo_documento: "CC"
+  Simular timeout
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-009
+Escenario: Respuesta inválida del Bureau
+Prioridad: P1 - Alta
+Estado: Automatizado
+Archivo: test_bureau_errors.py
+Función: test_tc_bc_009_respuesta_invalida_del_bureau
+Markers: @pytest.mark.high, @pytest.mark.regression
+Precondiciones:
+  - Bureau retorna JSON malformado
+  - API activa
+Pasos:
+  1. Consultar cliente
+  2. Bureau retorna respuesta corrupta
+  3. Validar parseo
+Resultado Esperado:
+  - Status 502 (Bad Gateway)
+  - Error: "Respuesta inválida del Bureau"
+  - No se procesa solicitud
+  - Alerta a sistemas
+Datos de Prueba:
+  Simular respuesta: {"invalid_json": }
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-010
+Escenario: Cliente extranjero con pasaporte
+Prioridad: P1 - Alta
+Estado: Automatizado
+Archivo: test_bureau_edge_cases.py
+Función: test_tc_bc_010_cliente_extranjero_pasaporte
+Markers: @pytest.mark.high, @pytest.mark.edge_case, @pytest.mark.integration
+Precondiciones:
+  - Cliente no residente
+  - Documento tipo PAS
+Pasos:
+  1. Ingresar pasaporte extranjero
+  2. Consultar Bureau
+  3. Verificar validación internacional
+Resultado Esperado:
+  - Status 200
+  - Score: null o 0
+  - sin_historial_local: true
+  - Mensaje: "Consulta internacional requerida"
+Datos de Prueba:
+  documento: "AB123456"
+  tipo_documento: "PAS"
+  expected_status: 200
+  expected_score: null
+  expected_sin_historial_local: true
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-011
+Escenario: Cliente sin historial crediticio
+Prioridad: P1 - Alta
+Estado: Automatizado
+Archivo: test_bureau_edge_cases.py
+Función: test_tc_bc_011_cliente_sin_historial_crediticio
+Markers: @pytest.mark.high, @pytest.mark.edge_case, @pytest.mark.integration
+Precondiciones:
+  - Cliente registrado por primera vez
+  - Sin préstamos previos
+Pasos:
+  1. Consultar nuevo cliente
+  2. Verificar respuesta sin datos
+Resultado Esperado:
+  - Status 200
+  - Score: null
+  - historial_encontrado: false
+  - Estado: "REQUIERE_ANALISIS_MANUAL"
+  - Datos demográficos básicos
+Datos de Prueba:
+  documento: "6789012345"
+  tipo_documento: "CC"
+  expected_status: 200
+  expected_score: null
+  expected_historial_encontrado: false
+  expected_estado: "REQUIERE_ANALISIS_MANUAL"
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-012
+Escenario: Documento duplicado en consulta simultánea
+Prioridad: P2 - Media
+Estado: Automatizado
+Archivo: test_bureau_edge_cases.py
+Función: test_tc_bc_012_documento_duplicado_consulta_simultanea
+Markers: @pytest.mark.medium, @pytest.mark.edge_case, @pytest.mark.integration
+Precondiciones:
+  - Dos oficiales consultan mismo cliente
+  - Ventana < 1 segundo
+Pasos:
+  1. Usuario A consulta documento
+  2. Usuario B consulta mismo documento
+  3. Verificar control de concurrencia
+Resultado Esperado:
+  - Status 200 para ambos
+  - Misma información
+  - Log de consulta duplicada
+  - No doble cobro Bureau
+Datos de Prueba:
+  documento: "7890123456"
+  tipo_documento: "CC"
+  Consultas paralelas (threading)
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-013
+Escenario: Consulta histórica - Obtener última consulta
+Prioridad: P2 - Media
+Estado: Automatizado
+Archivo: test_bureau_edge_cases.py
+Función: test_tc_bc_013_consulta_historica_cache
+Markers: @pytest.mark.medium, @pytest.mark.edge_case, @pytest.mark.integration
+Precondiciones:
+  - Cliente consultado previamente
+  - GET /api/bureau/{cliente_id}
+Pasos:
+  1. Realizar consulta inicial
+  2. Llamar endpoint de historial
+  3. Validar datos en caché
+Resultado Esperado:
+  - Status 200
+  - Mismos datos de consulta anterior
+  - timestamp_consulta visible
+  - No genera nuevo cargo
+Datos de Prueba:
+  cliente_id: "550e8400-e29b-41d4-a716-446655440000"
+  documento: "8901234567"
+  tipo_documento: "CC"
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-014
+Escenario: Cliente con score límite (edge case 600)
+Prioridad: P1 - Alta
+Estado: Automatizado
+Archivo: test_bureau_edge_cases.py
+Función: test_tc_bc_014_cliente_score_limite_600
+Markers: @pytest.mark.high, @pytest.mark.edge_case, @pytest.mark.integration
+Precondiciones:
+  - Cliente en score frontera
+  - Política: aprobación manual ≥ 600
+Pasos:
+  1. Consultar cliente score exacto 600
+  2. Verificar decisión automática
+Resultado Esperado:
+  - Status 200
+  - Score: 600
+  - Estado: "REVISAR"
+  - requiere_aprobacion_gerencia: true
+  - Flag de score límite
+Datos de Prueba:
+  documento: "8901234567"
+  tipo_documento: "CC"
+  expected_score: 600
+  expected_estado: "REVISAR"
+  expected_requiere_gerencia: true
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-015
+Escenario: Validación campo vacío (documento null)
+Prioridad: P1 - Alta
+Estado: Automatizado
+Archivo: test_bureau_errors.py
+Función: test_tc_bc_015_campo_documento_null
+Markers: @pytest.mark.high, @pytest.mark.validation, @pytest.mark.regression
+Precondiciones:
+  - Request sin documento
+Pasos:
+  1. Enviar request con documento vacío
+  2. Validar rechazo
+Resultado Esperado:
+  - Status 422
+  - Error: "Campo requerido: documento"
+  - Validación antes de llamar Bureau
+  - Mensaje user-friendly
+Datos de Prueba:
+  documento: null
+  tipo_documento: "CC"
+  expected_status: 422
+  expected_error: "Campo requerido"
+--------------------------------------------------------------------------------------------------------
+
+========================================================================================================
+CASOS DE PRUEBA ADICIONALES (Tests Extras para Mayor Cobertura)
+========================================================================================================
+
+ID: TC-BC-005-A
+Escenario: Documento vacío (string vacío)
+Prioridad: P1 - Alta
+Estado: Automatizado
+Archivo: test_bureau_validations.py
+Función: test_tc_bc_005_documento_vacio
+Markers: @pytest.mark.high, @pytest.mark.validation
+Datos: documento: ""
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-006-A
+Escenario: Documento solo espacios
+Prioridad: P1 - Alta
+Estado: Automatizado
+Archivo: test_bureau_validations.py
+Función: test_tc_bc_006_documento_solo_espacios
+Datos: documento: "   "
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-007-A
+Escenario: Tipo documento vacío
+Prioridad: P1 - Alta
+Estado: Automatizado
+Archivo: test_bureau_validations.py
+Función: test_tc_bc_007_tipo_documento_vacio
+Datos: tipo_documento: ""
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-008-A
+Escenario: Verificar lógica de retry
+Prioridad: P1 - Alta
+Estado: Automatizado
+Archivo: test_bureau_errors.py
+Función: test_tc_bc_008_verificar_retry_logic
+Descripción: Verificar que el API intente múltiples veces antes de fallar
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-009-A
+Escenario: Manejo campo faltante en respuesta
+Prioridad: P1 - Alta
+Estado: Automatizado
+Archivo: test_bureau_errors.py
+Función: test_tc_bc_009_manejo_campo_faltante_en_respuesta
+Descripción: Verificar que el API maneja correctamente respuestas sin campos críticos
+--------------------------------------------------------------------------------------------------------
+
+ID: TC-BC-014-A
+Escenario: Scores frontera múltiples
+Prioridad: P2 - Media
+Estado: Automatizado
+Archivo: test_bureau_edge_cases.py
+Función: test_tc_bc_014_scores_frontera
+Descripción: Verificar comportamiento en scores críticos (499, 500, 599, 600, 699, 700)
+--------------------------------------------------------------------------------------------------------
+
+========================================================================================================
+RESUMEN DE EJECUCIÓN
+========================================================================================================
+
+Total Tests Principales: 15
+Total Tests Adicionales: 6
+Total General: 21 tests
+
+Por Prioridad:
+  P0 (Crítica):  5 tests
+  P1 (Alta):    10 tests
+  P2 (Media):    3 tests
+  Adicionales:   3 tests
+
+Por Archivo:
+  test_bureau_happy_path.py:    4 tests
+  test_bureau_validations.py:   6 tests
+  test_bureau_errors.py:        5 tests
+  test_bureau_edge_cases.py:    6 tests
+
+Por Marker:
+  critical:      5 tests
+  high:         10 tests
+  medium:        3 tests
+  smoke:         4 tests
+  regression:   13 tests
+  integration:  10 tests
+  validation:    9 tests
+  edge_case:     6 tests
+  timeout:       1 test
+
+Comandos de Ejecución:
+  pytest                           # Todos los tests (21)
+  pytest -m critical               # Solo críticos (5)
+  pytest -m "critical or high"     # Críticos + Alta (15)
+  pytest -m regression             # Suite regresión (13)
+  pytest -m smoke                  # Smoke tests (4)
+
+========================================================================================================
+FIN DEL REPORTE SVE
+========================================================================================================

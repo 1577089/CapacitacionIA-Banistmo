@@ -1,0 +1,617 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+		"name": "Transferencias Bancarias - Test Suite",
+		"description": "Colección completa de pruebas para API de transferencias bancarias\n\n**Casos de prueba:**\n- Path feliz\n- Validación de límites (diarios/mensuales)\n- Saldo insuficiente\n- OTP para montos altos\n- Mantenimiento\n- Validaciones de cuentas\n- Edge cases\n- Concurrencia\n- Seguridad",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Setup",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Cuenta Origen",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/cuentas/{{cuenta_origen}}/reset",
+							"host": ["{{base_url}}"],
+							"path": ["api", "cuentas", "{{cuenta_origen}}", "reset"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Estado Cuenta",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/cuentas/{{cuenta_origen}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "cuentas", "{{cuenta_origen}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "01 - Path Feliz - Transferencia Exitosa",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 or 201\", function () {",
+							"    pm.expect([200, 201]).to.include(pm.response.code);",
+							"});",
+							"",
+							"pm.test(\"Response has status COMPLETED\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.be.oneOf([\"COMPLETED\", \"COMPLETADO\"]);",
+							"});",
+							"",
+							"pm.test(\"Response includes transaction ID\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).to.exist;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"origen\": \"{{cuenta_origen}}\",\n    \"destino\": \"{{cuenta_destino}}\",\n    \"monto\": 1000\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/transferencias",
+					"host": ["{{base_url}}"],
+					"path": ["api", "transferencias"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "02 - Excede Límite Diario ($60K > $50K)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400 or 403\", function () {",
+							"    pm.expect([400, 403]).to.include(pm.response.code);",
+							"});",
+							"",
+							"pm.test(\"Error message mentions daily limit\", function () {",
+							"    var responseText = pm.response.text().toLowerCase();",
+							"    pm.expect(responseText).to.satisfy(function(text) {",
+							"        return text.includes('límite') || text.includes('limite') || text.includes('diario') || text.includes('daily');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"origen\": \"{{cuenta_origen}}\",\n    \"destino\": \"{{cuenta_destino}}\",\n    \"monto\": 60000\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/transferencias",
+					"host": ["{{base_url}}"],
+					"path": ["api", "transferencias"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "03 - Excede Límite Mensual",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400, 401, 402 or 403\", function () {",
+							"    pm.expect([400, 401, 402, 403]).to.include(pm.response.code);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"origen\": \"{{cuenta_origen}}\",\n    \"destino\": \"{{cuenta_destino}}\",\n    \"monto\": 100000\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/transferencias",
+					"host": ["{{base_url}}"],
+					"path": ["api", "transferencias"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "04 - Saldo Insuficiente",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400, 401, 402 or 403\", function () {",
+							"    pm.expect([400, 401, 402, 403]).to.include(pm.response.code);",
+							"});",
+							"",
+							"pm.test(\"Error mentions insufficient balance or OTP\", function () {",
+							"    var responseText = pm.response.text().toLowerCase();",
+							"    pm.expect(responseText).to.satisfy(function(text) {",
+							"        return text.includes('saldo') || text.includes('insuficiente') || text.includes('insufficient') || text.includes('otp');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"origen\": \"{{cuenta_origen}}\",\n    \"destino\": \"{{cuenta_destino}}\",\n    \"monto\": 1000000000\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/transferencias",
+					"host": ["{{base_url}}"],
+					"path": ["api", "transferencias"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "05 - OTP Inválido para Monto Alto (>$1M)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400, 401 or 403\", function () {",
+							"    pm.expect([400, 401, 403]).to.include(pm.response.code);",
+							"});",
+							"",
+							"pm.test(\"Error mentions OTP\", function () {",
+							"    var responseText = pm.response.text().toLowerCase();",
+							"    pm.expect(responseText).to.satisfy(function(text) {",
+							"        return text.includes('otp') || text.includes('codigo') || text.includes('código') || text.includes('inválido');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}"
+					},
+					{
+						"key": "X-OTP",
+						"value": "000000"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"origen\": \"{{cuenta_origen}}\",\n    \"destino\": \"{{cuenta_destino}}\",\n    \"monto\": 2000000,\n    \"otp\": \"000000\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/transferencias",
+					"host": ["{{base_url}}"],
+					"path": ["api", "transferencias"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "06 - Transferencia en Horario Mantenimiento",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 423, 503 or 400\", function () {",
+							"    pm.expect([400, 423, 503]).to.include(pm.response.code);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}"
+					},
+					{
+						"key": "X-Force-Maintenance",
+						"value": "1",
+						"description": "Simular horario de mantenimiento"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"origen\": \"{{cuenta_origen}}\",\n    \"destino\": \"{{cuenta_destino}}\",\n    \"monto\": 1000\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/transferencias",
+					"host": ["{{base_url}}"],
+					"path": ["api", "transferencias"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "07 - Cuenta Destino Inválida",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400 or 404\", function () {",
+							"    pm.expect([400, 404]).to.include(pm.response.code);",
+							"});",
+							"",
+							"pm.test(\"Error mentions account not found\", function () {",
+							"    var responseText = pm.response.text().toLowerCase();",
+							"    pm.expect(responseText).to.satisfy(function(text) {",
+							"        return text.includes('destino') || text.includes('no encontrada') || text.includes('not found') || text.includes('no existe');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"origen\": \"{{cuenta_origen}}\",\n    \"destino\": \"00000000\",\n    \"monto\": 500\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/transferencias",
+					"host": ["{{base_url}}"],
+					"path": ["api", "transferencias"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "08 - Edge Case: Transferencia $0.01",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200, 201 or 400\", function () {",
+							"    pm.expect([200, 201, 400]).to.include(pm.response.code);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"origen\": \"{{cuenta_origen}}\",\n    \"destino\": \"{{cuenta_destino}}\",\n    \"monto\": 0.01\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/transferencias",
+					"host": ["{{base_url}}"],
+					"path": ["api", "transferencias"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "09 - Edge Case: Monto Negativo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400 or 422 (Validation Error)\", function () {",
+							"    pm.expect([400, 422]).to.include(pm.response.code);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"origen\": \"{{cuenta_origen}}\",\n    \"destino\": \"{{cuenta_destino}}\",\n    \"monto\": -100\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/transferencias",
+					"host": ["{{base_url}}"],
+					"path": ["api", "transferencias"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10 - Edge Case: Decimales Excesivos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200, 201, 400 or 422\", function () {",
+							"    pm.expect([200, 201, 400, 422]).to.include(pm.response.code);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"origen\": \"{{cuenta_origen}}\",\n    \"destino\": \"{{cuenta_destino}}\",\n    \"monto\": 100.123456\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/transferencias",
+					"host": ["{{base_url}}"],
+					"path": ["api", "transferencias"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11 - Cuenta Origen = Destino",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"Error mentions same account\", function () {",
+							"    var responseText = pm.response.text().toLowerCase();",
+							"    pm.expect(responseText).to.satisfy(function(text) {",
+							"        return text.includes('origen') && text.includes('destino');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"origen\": \"{{cuenta_origen}}\",\n    \"destino\": \"{{cuenta_origen}}\",\n    \"monto\": 100\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/transferencias",
+					"host": ["{{base_url}}"],
+					"path": ["api", "transferencias"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "12 - Sin Autenticación",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401 or 403\", function () {",
+							"    pm.expect([401, 403]).to.include(pm.response.code);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"origen\": \"{{cuenta_origen}}\",\n    \"destino\": \"{{cuenta_destino}}\",\n    \"monto\": 100\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/transferencias",
+					"host": ["{{base_url}}"],
+					"path": ["api", "transferencias"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Historial de Transferencias",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/transferencias/historial",
+					"host": ["{{base_url}}"],
+					"path": ["api", "transferencias", "historial"]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "Bearer test_token_123",
+			"type": "string"
+		},
+		{
+			"key": "cuenta_origen",
+			"value": "12345678",
+			"type": "string"
+		},
+		{
+			"key": "cuenta_destino",
+			"value": "87654321",
+			"type": "string"
+		},
+		{
+			"key": "cuenta_destino_b",
+			"value": "87654322",
+			"type": "string"
+		},
+		{
+			"key": "otp_valido",
+			"value": "123456",
+			"type": "string"
+		}
+	]
+}

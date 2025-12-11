@@ -1,0 +1,199 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TestReport format="SVE" version="1.0">
+  <Metadata>
+    <Project>API Transferencias Bancarias - Testing QA</Project>
+    <GeneratedAt>2025-12-10T12:32:07.206286</GeneratedAt>
+    <TestFramework>pytest</TestFramework>
+  </Metadata>
+  <Summary>
+    <TotalTests>15</TotalTests>
+    <Passed>13</Passed>
+    <Failed>0</Failed>
+    <Skipped>2</Skipped>
+    <Errors>0</Errors>
+    <PassRate>86.67%</PassRate>
+    <TotalDuration>77.49s</TotalDuration>
+  </Summary>
+  <TestCases>
+    <TestCase id="test_01_transferencia_exitosa_path_feliz" status="PASS">
+      <Name>test_01_transferencia_exitosa_path_feliz</Name>
+      <Scenario />
+      <Preconditions />
+      <ExpectedResult />
+      <ActualResult>Test ejecutado exitosamente según lo esperado</ActualResult>
+      <Duration>4.093s</Duration>
+      <Timestamp>2025-12-10T12:30:53.620260</Timestamp>
+      <TestData>
+        <DataItem name="initialize_sve_reporter">None</DataItem>
+      </TestData>
+    </TestCase>
+    <TestCase id="test_02_excede_limite_diario" status="PASS">
+      <Name>test_02_excede_limite_diario</Name>
+      <Scenario />
+      <Preconditions />
+      <ExpectedResult />
+      <ActualResult>Test ejecutado exitosamente según lo esperado</ActualResult>
+      <Duration>4.099s</Duration>
+      <Timestamp>2025-12-10T12:30:57.744829</Timestamp>
+      <TestData>
+        <DataItem name="initialize_sve_reporter">None</DataItem>
+      </TestData>
+    </TestCase>
+    <TestCase id="test_03_excede_limite_mensual" status="PASS">
+      <Name>test_03_excede_limite_mensual</Name>
+      <Scenario />
+      <Preconditions />
+      <ExpectedResult />
+      <ActualResult>Test ejecutado exitosamente según lo esperado</ActualResult>
+      <Duration>4.072s</Duration>
+      <Timestamp>2025-12-10T12:31:01.820068</Timestamp>
+      <TestData>
+        <DataItem name="initialize_sve_reporter">None</DataItem>
+      </TestData>
+    </TestCase>
+    <TestCase id="test_04_saldo_insuficiente" status="PASS">
+      <Name>test_04_saldo_insuficiente</Name>
+      <Scenario />
+      <Preconditions />
+      <ExpectedResult />
+      <ActualResult>Test ejecutado exitosamente según lo esperado</ActualResult>
+      <Duration>4.062s</Duration>
+      <Timestamp>2025-12-10T12:31:05.885481</Timestamp>
+      <TestData>
+        <DataItem name="initialize_sve_reporter">None</DataItem>
+      </TestData>
+    </TestCase>
+    <TestCase id="test_05_otp_invalido_para_monto_alto" status="PASS">
+      <Name>test_05_otp_invalido_para_monto_alto</Name>
+      <Scenario />
+      <Preconditions />
+      <ExpectedResult />
+      <ActualResult>Test ejecutado exitosamente según lo esperado</ActualResult>
+      <Duration>4.073s</Duration>
+      <Timestamp>2025-12-10T12:31:09.962333</Timestamp>
+      <TestData>
+        <DataItem name="initialize_sve_reporter">None</DataItem>
+      </TestData>
+    </TestCase>
+    <TestCase id="test_06_transferencia_en_mantenimiento" status="SKIP">
+      <Name>test_06_transferencia_en_mantenimiento</Name>
+      <Scenario />
+      <Preconditions />
+      <ExpectedResult />
+      <ActualResult>Test omitido: ('C:\\Users\\1577089\\Desktop\\CapacitacionIA-Banistmo\\CapacitacionIA-Banistmo\\Clase2\\Ejemplo2_TransferenciaBancaria\\tests\\test_transferencias.py', 103, 'Skipped: Para ejecutar este test exponga la cabecera de forzado: set FORCE_MAINTENANCE=1')</ActualResult>
+      <Duration>2.033s</Duration>
+      <Timestamp>2025-12-10T12:31:11.999117</Timestamp>
+      <TestData>
+        <DataItem name="initialize_sve_reporter">None</DataItem>
+      </TestData>
+    </TestCase>
+    <TestCase id="test_07_cuenta_destino_invalida" status="PASS">
+      <Name>test_07_cuenta_destino_invalida</Name>
+      <Scenario />
+      <Preconditions />
+      <ExpectedResult />
+      <ActualResult>Test ejecutado exitosamente según lo esperado</ActualResult>
+      <Duration>4.064s</Duration>
+      <Timestamp>2025-12-10T12:31:16.066802</Timestamp>
+      <TestData>
+        <DataItem name="initialize_sve_reporter">None</DataItem>
+      </TestData>
+    </TestCase>
+    <TestCase id="test_08_edge_transfer_0_01" status="PASS">
+      <Name>test_08_edge_transfer_0_01</Name>
+      <Scenario />
+      <Preconditions />
+      <ExpectedResult />
+      <ActualResult>Test ejecutado exitosamente según lo esperado</ActualResult>
+      <Duration>4.075s</Duration>
+      <Timestamp>2025-12-10T12:31:20.148619</Timestamp>
+      <TestData>
+        <DataItem name="initialize_sve_reporter">None</DataItem>
+      </TestData>
+    </TestCase>
+    <TestCase id="test_09_edge_monto_negativo" status="PASS">
+      <Name>test_09_edge_monto_negativo</Name>
+      <Scenario />
+      <Preconditions />
+      <ExpectedResult />
+      <ActualResult>Test ejecutado exitosamente según lo esperado</ActualResult>
+      <Duration>4.102s</Duration>
+      <Timestamp>2025-12-10T12:31:24.272957</Timestamp>
+      <TestData>
+        <DataItem name="initialize_sve_reporter">None</DataItem>
+      </TestData>
+    </TestCase>
+    <TestCase id="test_10_edge_decimales_excesivos" status="PASS">
+      <Name>test_10_edge_decimales_excesivos</Name>
+      <Scenario />
+      <Preconditions />
+      <ExpectedResult />
+      <ActualResult>Test ejecutado exitosamente según lo esperado</ActualResult>
+      <Duration>4.099s</Duration>
+      <Timestamp>2025-12-10T12:31:28.455428</Timestamp>
+      <TestData>
+        <DataItem name="initialize_sve_reporter">None</DataItem>
+      </TestData>
+    </TestCase>
+    <TestCase id="test_11_concurrencia_dos_transferencias_agotan_saldo" status="PASS">
+      <Name>test_11_concurrencia_dos_transferencias_agotan_saldo</Name>
+      <Scenario />
+      <Preconditions />
+      <ExpectedResult />
+      <ActualResult>Test ejecutado exitosamente según lo esperado</ActualResult>
+      <Duration>6.130s</Duration>
+      <Timestamp>2025-12-10T12:31:34.590808</Timestamp>
+      <TestData>
+        <DataItem name="initialize_sve_reporter">None</DataItem>
+      </TestData>
+    </TestCase>
+    <TestCase id="test_12_cuenta_origen_bloqueada" status="SKIP">
+      <Name>test_12_cuenta_origen_bloqueada</Name>
+      <Scenario />
+      <Preconditions />
+      <ExpectedResult />
+      <ActualResult>Test omitido: ('C:\\Users\\1577089\\Desktop\\CapacitacionIA-Banistmo\\CapacitacionIA-Banistmo\\Clase2\\Ejemplo2_TransferenciaBancaria\\tests\\test_transferencias.py', 180, 'Skipped: Para ejecutar este test defina BLOCKED_ACCOUNT en el entorno')</ActualResult>
+      <Duration>2.011s</Duration>
+      <Timestamp>2025-12-10T12:31:36.620379</Timestamp>
+      <TestData>
+        <DataItem name="initialize_sve_reporter">None</DataItem>
+      </TestData>
+    </TestCase>
+    <TestCase id="test_13_origen_equals_destino" status="PASS">
+      <Name>test_13_origen_equals_destino</Name>
+      <Scenario />
+      <Preconditions />
+      <ExpectedResult />
+      <ActualResult>Test ejecutado exitosamente según lo esperado</ActualResult>
+      <Duration>4.064s</Duration>
+      <Timestamp>2025-12-10T12:31:40.687137</Timestamp>
+      <TestData>
+        <DataItem name="initialize_sve_reporter">None</DataItem>
+      </TestData>
+    </TestCase>
+    <TestCase id="test_14_rate_limit_alta_frecuencia" status="PASS">
+      <Name>test_14_rate_limit_alta_frecuencia</Name>
+      <Scenario />
+      <Preconditions />
+      <ExpectedResult />
+      <ActualResult>Test ejecutado exitosamente según lo esperado</ActualResult>
+      <Duration>22.430s</Duration>
+      <Timestamp>2025-12-10T12:32:03.120100</Timestamp>
+      <TestData>
+        <DataItem name="initialize_sve_reporter">None</DataItem>
+      </TestData>
+    </TestCase>
+    <TestCase id="test_15_sin_autenticacion_token_expirado" status="PASS">
+      <Name>test_15_sin_autenticacion_token_expirado</Name>
+      <Scenario />
+      <Preconditions />
+      <ExpectedResult />
+      <ActualResult>Test ejecutado exitosamente según lo esperado</ActualResult>
+      <Duration>4.081s</Duration>
+      <Timestamp>2025-12-10T12:32:07.205524</Timestamp>
+      <TestData>
+        <DataItem name="initialize_sve_reporter">None</DataItem>
+      </TestData>
+    </TestCase>
+  </TestCases>
+</TestReport>

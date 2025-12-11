@@ -1,0 +1,7 @@
+pytest
+pytest-cov
+pytest-html
+requests
+fastapi
+uvicorn[standard]
+pydantic

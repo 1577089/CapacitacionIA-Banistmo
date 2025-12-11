@@ -1,0 +1,246 @@
+{
+  "format": "SVE",
+  "version": "1.0",
+  "metadata": {
+    "project": "API Transferencias Bancarias - Testing QA",
+    "generated_at": "2025-12-10T12:32:07.211660",
+    "test_framework": "pytest",
+    "environment": "Development"
+  },
+  "summary": {
+    "total_tests": 15,
+    "passed": 13,
+    "failed": 0,
+    "skipped": 2,
+    "errors": 0,
+    "pass_rate": "86.67%",
+    "total_duration": "77.49s"
+  },
+  "test_cases": [
+    {
+      "test_id": "test_01_transferencia_exitosa_path_feliz",
+      "test_name": "test_01_transferencia_exitosa_path_feliz",
+      "status": "PASS",
+      "duration": 4.093,
+      "scenario": "",
+      "expected_result": "",
+      "actual_result": "Test ejecutado exitosamente según lo esperado",
+      "error_message": "",
+      "preconditions": "",
+      "test_data": {
+        "initialize_sve_reporter": "None"
+      },
+      "timestamp": "2025-12-10T12:30:53.620260"
+    },
+    {
+      "test_id": "test_02_excede_limite_diario",
+      "test_name": "test_02_excede_limite_diario",
+      "status": "PASS",
+      "duration": 4.099,
+      "scenario": "",
+      "expected_result": "",
+      "actual_result": "Test ejecutado exitosamente según lo esperado",
+      "error_message": "",
+      "preconditions": "",
+      "test_data": {
+        "initialize_sve_reporter": "None"
+      },
+      "timestamp": "2025-12-10T12:30:57.744829"
+    },
+    {
+      "test_id": "test_03_excede_limite_mensual",
+      "test_name": "test_03_excede_limite_mensual",
+      "status": "PASS",
+      "duration": 4.072,
+      "scenario": "",
+      "expected_result": "",
+      "actual_result": "Test ejecutado exitosamente según lo esperado",
+      "error_message": "",
+      "preconditions": "",
+      "test_data": {
+        "initialize_sve_reporter": "None"
+      },
+      "timestamp": "2025-12-10T12:31:01.820068"
+    },
+    {
+      "test_id": "test_04_saldo_insuficiente",
+      "test_name": "test_04_saldo_insuficiente",
+      "status": "PASS",
+      "duration": 4.062,
+      "scenario": "",
+      "expected_result": "",
+      "actual_result": "Test ejecutado exitosamente según lo esperado",
+      "error_message": "",
+      "preconditions": "",
+      "test_data": {
+        "initialize_sve_reporter": "None"
+      },
+      "timestamp": "2025-12-10T12:31:05.885481"
+    },
+    {
+      "test_id": "test_05_otp_invalido_para_monto_alto",
+      "test_name": "test_05_otp_invalido_para_monto_alto",
+      "status": "PASS",
+      "duration": 4.073,
+      "scenario": "",
+      "expected_result": "",
+      "actual_result": "Test ejecutado exitosamente según lo esperado",
+      "error_message": "",
+      "preconditions": "",
+      "test_data": {
+        "initialize_sve_reporter": "None"
+      },
+      "timestamp": "2025-12-10T12:31:09.962333"
+    },
+    {
+      "test_id": "test_06_transferencia_en_mantenimiento",
+      "test_name": "test_06_transferencia_en_mantenimiento",
+      "status": "SKIP",
+      "duration": 2.033,
+      "scenario": "",
+      "expected_result": "",
+      "actual_result": "Test omitido: ('C:\\\\Users\\\\1577089\\\\Desktop\\\\CapacitacionIA-Banistmo\\\\CapacitacionIA-Banistmo\\\\Clase2\\\\Ejemplo2_TransferenciaBancaria\\\\tests\\\\test_transferencias.py', 103, 'Skipped: Para ejecutar este test exponga la cabecera de forzado: set FORCE_MAINTENANCE=1')",
+      "error_message": "",
+      "preconditions": "",
+      "test_data": {
+        "initialize_sve_reporter": "None"
+      },
+      "timestamp": "2025-12-10T12:31:11.999117"
+    },
+    {
+      "test_id": "test_07_cuenta_destino_invalida",
+      "test_name": "test_07_cuenta_destino_invalida",
+      "status": "PASS",
+      "duration": 4.064,
+      "scenario": "",
+      "expected_result": "",
+      "actual_result": "Test ejecutado exitosamente según lo esperado",
+      "error_message": "",
+      "preconditions": "",
+      "test_data": {
+        "initialize_sve_reporter": "None"
+      },
+      "timestamp": "2025-12-10T12:31:16.066802"
+    },
+    {
+      "test_id": "test_08_edge_transfer_0_01",
+      "test_name": "test_08_edge_transfer_0_01",
+      "status": "PASS",
+      "duration": 4.075,
+      "scenario": "",
+      "expected_result": "",
+      "actual_result": "Test ejecutado exitosamente según lo esperado",
+      "error_message": "",
+      "preconditions": "",
+      "test_data": {
+        "initialize_sve_reporter": "None"
+      },
+      "timestamp": "2025-12-10T12:31:20.148619"
+    },
+    {
+      "test_id": "test_09_edge_monto_negativo",
+      "test_name": "test_09_edge_monto_negativo",
+      "status": "PASS",
+      "duration": 4.102,
+      "scenario": "",
+      "expected_result": "",
+      "actual_result": "Test ejecutado exitosamente según lo esperado",
+      "error_message": "",
+      "preconditions": "",
+      "test_data": {
+        "initialize_sve_reporter": "None"
+      },
+      "timestamp": "2025-12-10T12:31:24.272957"
+    },
+    {
+      "test_id": "test_10_edge_decimales_excesivos",
+      "test_name": "test_10_edge_decimales_excesivos",
+      "status": "PASS",
+      "duration": 4.099,
+      "scenario": "",
+      "expected_result": "",
+      "actual_result": "Test ejecutado exitosamente según lo esperado",
+      "error_message": "",
+      "preconditions": "",
+      "test_data": {
+        "initialize_sve_reporter": "None"
+      },
+      "timestamp": "2025-12-10T12:31:28.455428"
+    },
+    {
+      "test_id": "test_11_concurrencia_dos_transferencias_agotan_saldo",
+      "test_name": "test_11_concurrencia_dos_transferencias_agotan_saldo",
+      "status": "PASS",
+      "duration": 6.13,
+      "scenario": "",
+      "expected_result": "",
+      "actual_result": "Test ejecutado exitosamente según lo esperado",
+      "error_message": "",
+      "preconditions": "",
+      "test_data": {
+        "initialize_sve_reporter": "None"
+      },
+      "timestamp": "2025-12-10T12:31:34.590808"
+    },
+    {
+      "test_id": "test_12_cuenta_origen_bloqueada",
+      "test_name": "test_12_cuenta_origen_bloqueada",
+      "status": "SKIP",
+      "duration": 2.011,
+      "scenario": "",
+      "expected_result": "",
+      "actual_result": "Test omitido: ('C:\\\\Users\\\\1577089\\\\Desktop\\\\CapacitacionIA-Banistmo\\\\CapacitacionIA-Banistmo\\\\Clase2\\\\Ejemplo2_TransferenciaBancaria\\\\tests\\\\test_transferencias.py', 180, 'Skipped: Para ejecutar este test defina BLOCKED_ACCOUNT en el entorno')",
+      "error_message": "",
+      "preconditions": "",
+      "test_data": {
+        "initialize_sve_reporter": "None"
+      },
+      "timestamp": "2025-12-10T12:31:36.620379"
+    },
+    {
+      "test_id": "test_13_origen_equals_destino",
+      "test_name": "test_13_origen_equals_destino",
+      "status": "PASS",
+      "duration": 4.064,
+      "scenario": "",
+      "expected_result": "",
+      "actual_result": "Test ejecutado exitosamente según lo esperado",
+      "error_message": "",
+      "preconditions": "",
+      "test_data": {
+        "initialize_sve_reporter": "None"
+      },
+      "timestamp": "2025-12-10T12:31:40.687137"
+    },
+    {
+      "test_id": "test_14_rate_limit_alta_frecuencia",
+      "test_name": "test_14_rate_limit_alta_frecuencia",
+      "status": "PASS",
+      "duration": 22.43,
+      "scenario": "",
+      "expected_result": "",
+      "actual_result": "Test ejecutado exitosamente según lo esperado",
+      "error_message": "",
+      "preconditions": "",
+      "test_data": {
+        "initialize_sve_reporter": "None"
+      },
+      "timestamp": "2025-12-10T12:32:03.120100"
+    },
+    {
+      "test_id": "test_15_sin_autenticacion_token_expirado",
+      "test_name": "test_15_sin_autenticacion_token_expirado",
+      "status": "PASS",
+      "duration": 4.081,
+      "scenario": "",
+      "expected_result": "",
+      "actual_result": "Test ejecutado exitosamente según lo esperado",
+      "error_message": "",
+      "preconditions": "",
+      "test_data": {
+        "initialize_sve_reporter": "None"
+      },
+      "timestamp": "2025-12-10T12:32:07.205524"
+    }
+  ]
+}

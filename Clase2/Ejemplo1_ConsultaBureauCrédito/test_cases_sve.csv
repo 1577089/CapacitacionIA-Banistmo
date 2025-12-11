@@ -1,0 +1,109 @@
+ID,Escenario,Precondiciones,Pasos,Resultado Esperado,Prioridad,Datos de Prueba,Estado,Archivo Test,Markers
+TC-BC-001,Path feliz - Cliente con buen historial crediticio,"- API Bureau disponible
+- Cliente existe en BD
+- Cliente tiene historial positivo","1. Oficial ingresa documento válido
+2. Sistema llama POST /api/bureau/consultar
+3. Bureau retorna score y estado","- Status 200
+- Score ≥ 700
+- Estado: APROBADO
+- Sin deudas en mora
+- Tiempo respuesta < 3s",P0 - Crítica,"{""documento"": ""1234567890"", ""tipo_documento"": ""CC""}
+Score esperado: 750",Automatizado,test_bureau_happy_path.py,critical|smoke|integration
+TC-BC-002,Cliente con deudas activas pero al día,"- API Bureau disponible
+- Cliente tiene préstamos vigentes
+- Sin moras actuales","1. Consultar cliente con préstamos activos
+2. Verificar detalle de obligaciones
+3. Validar estado de pagos","- Status 200
+- Score: 650-699
+- Lista de deudas activas
+- Estado: REVISAR
+- Monto_deuda_total visible",P0 - Crítica,"{""documento"": ""2345678901"", ""tipo_documento"": ""CC""}
+Deuda activa: $50,000,000",Automatizado,test_bureau_happy_path.py,critical|regression|integration
+TC-BC-003,Cliente con mora actual,"- Cliente registrado
+- Cliente tiene pagos vencidos","1. Consultar cliente moroso
+2. Verificar días de mora
+3. Validar alertas de riesgo","- Status 200
+- Score < 500
+- Estado: RECHAZADO
+- dias_mora > 0
+- Alertas de riesgo activas",P0 - Crítica,"{""documento"": ""3456789012"", ""tipo_documento"": ""CC""}
+Días mora: 45",Automatizado,test_bureau_happy_path.py,critical|regression|integration
+TC-BC-004,Cliente en lista de riesgo CIFIN,"- Cliente reportado en CIFIN
+- API Bureau disponible","1. Consultar documento reportado
+2. Verificar flag de lista negra
+3. Validar razón del reporte","- Status 200
+- en_cifin: true
+- Estado: RECHAZADO
+- razon_reporte visible
+- Bloqueo automático",P0 - Crítica,"{""documento"": ""4567890123"", ""tipo_documento"": ""CC""}
+Reporte: Fraude 2023",Automatizado,test_bureau_happy_path.py,critical|regression|integration
+TC-BC-005,Validación documento de identidad inválido,- Sistema activo,"1. Ingresar documento con caracteres especiales
+2. Enviar request al Bureau","- Status 422 (Validation Error)
+- Mensaje: Documento inválido
+- No consulta Bureau
+- Log de validación",P1 - Alta,"{""documento"": ""123-456*789"", ""tipo_documento"": ""CC""}",Automatizado,test_bureau_validations.py,high|validation|regression
+TC-BC-006,Validación documento con longitud incorrecta,- Sistema activo,"1. Ingresar documento < 6 dígitos
+2. Enviar solicitud","- Status 422
+- Error: Longitud inválida
+- Rango esperado: 6-12 dígitos",P1 - Alta,"{""documento"": ""12345"", ""tipo_documento"": ""CC""}",Automatizado,test_bureau_validations.py,high|validation|regression
+TC-BC-007,Tipo de documento no válido,- Sistema activo,"1. Enviar tipo_documento no soportado
+2. Intentar consulta","- Status 422
+- Error: Tipo documento no válido
+- Tipos válidos: CC, CE, NIT, PAS",P1 - Alta,"{""documento"": ""1234567890"", ""tipo_documento"": ""XXX""}",Automatizado,test_bureau_validations.py,high|validation|regression
+TC-BC-008,Servicio Bureau caído (timeout 5 segundos),"- API Bureau no disponible
+- Timeout configurado en 5s","1. Intentar consulta
+2. Esperar timeout
+3. Verificar manejo de error","- Status 503 (Service Unavailable)
+- Mensaje: Bureau no disponible
+- Retry después de 30s
+- Log de incidencia",P0 - Crítica,"{""documento"": ""5678901234"", ""tipo_documento"": ""CC""}
+Simular timeout",Automatizado,test_bureau_errors.py,critical|timeout|regression
+TC-BC-009,Respuesta inválida del Bureau,"- Bureau retorna JSON malformado
+- API activa","1. Consultar cliente
+2. Bureau retorna respuesta corrupta
+3. Validar parseo","- Status 502 (Bad Gateway)
+- Error: Respuesta inválida del Bureau
+- No se procesa solicitud
+- Alerta a sistemas",P1 - Alta,"Simular respuesta: {""invalid_json"": }",Automatizado,test_bureau_errors.py,high|regression
+TC-BC-010,Cliente extranjero con pasaporte,"- Cliente no residente
+- Documento tipo PAS","1. Ingresar pasaporte extranjero
+2. Consultar Bureau
+3. Verificar validación internacional","- Status 200
+- Score: null o 0
+- sin_historial_local: true
+- Mensaje: Consulta internacional requerida",P1 - Alta,"{""documento"": ""AB123456"", ""tipo_documento"": ""PAS""}",Automatizado,test_bureau_edge_cases.py,high|edge_case|integration
+TC-BC-011,Cliente sin historial crediticio,"- Cliente registrado por primera vez
+- Sin préstamos previos","1. Consultar nuevo cliente
+2. Verificar respuesta sin datos","- Status 200
+- Score: null
+- historial_encontrado: false
+- Estado: REQUIERE_ANALISIS_MANUAL
+- Datos demográficos básicos",P1 - Alta,"{""documento"": ""6789012345"", ""tipo_documento"": ""CC""}",Automatizado,test_bureau_edge_cases.py,high|edge_case|integration
+TC-BC-012,Documento duplicado en consulta simultánea,"- Dos oficiales consultan mismo cliente
+- Ventana < 1 segundo","1. Usuario A consulta documento
+2. Usuario B consulta mismo documento
+3. Verificar control de concurrencia","- Status 200 para ambos
+- Misma información
+- Log de consulta duplicada
+- No doble cobro Bureau",P2 - Media,"{""documento"": ""7890123456"", ""tipo_documento"": ""CC""}
+Consultas paralelas",Automatizado,test_bureau_edge_cases.py,medium|edge_case|integration
+TC-BC-013,Consulta histórica - Obtener última consulta,"- Cliente consultado previamente
+- GET /api/bureau/{cliente_id}","1. Realizar consulta inicial
+2. Llamar endpoint de historial
+3. Validar datos en caché","- Status 200
+- Mismos datos de consulta anterior
+- timestamp_consulta visible
+- No genera nuevo cargo",P2 - Media,"{""cliente_id"": ""550e8400-e29b-41d4-a716-446655440000""}",Automatizado,test_bureau_edge_cases.py,medium|edge_case|integration
+TC-BC-014,Cliente con score límite (edge case 600),"- Cliente en score frontera
+- Política: aprobación manual ≥ 600","1. Consultar cliente score exacto 600
+2. Verificar decisión automática","- Status 200
+- Score: 600
+- Estado: REVISAR
+- requiere_aprobacion_gerencia: true
+- Flag de score límite",P1 - Alta,"{""documento"": ""8901234567"", ""tipo_documento"": ""CC""}
+Score: 600",Automatizado,test_bureau_edge_cases.py,high|edge_case|integration
+TC-BC-015,Validación campo vacío (documento null),- Request sin documento,"1. Enviar request con documento vacío
+2. Validar rechazo","- Status 422
+- Error: Campo requerido: documento
+- Validación antes de llamar Bureau
+- Mensaje user-friendly",P1 - Alta,"{""documento"": null, ""tipo_documento"": ""CC""}",Automatizado,test_bureau_errors.py,high|validation|regression

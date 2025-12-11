@@ -1,0 +1,531 @@
+{
+  "project": "Bureau de Crédito - Consulta Historial Crediticio",
+  "version": "1.0",
+  "date": "2025-12-09",
+  "total_tests": 21,
+  "test_cases": [
+    {
+      "id": "TC-BC-001",
+      "scenario": "Path feliz - Cliente con buen historial crediticio",
+      "priority": "P0 - Crítica",
+      "status": "Automatizado",
+      "file": "test_bureau_happy_path.py",
+      "function": "test_tc_bc_001_cliente_buen_historial",
+      "markers": ["critical", "smoke", "integration"],
+      "preconditions": [
+        "API Bureau disponible",
+        "Cliente existe en BD",
+        "Cliente tiene historial positivo"
+      ],
+      "steps": [
+        "Oficial ingresa documento válido",
+        "Sistema llama POST /api/bureau/consultar",
+        "Bureau retorna score y estado"
+      ],
+      "expected_result": {
+        "status_code": 200,
+        "score": ">=700",
+        "estado": "APROBADO",
+        "deudas_mora": 0,
+        "response_time": "<3s"
+      },
+      "test_data": {
+        "documento": "1234567890",
+        "tipo_documento": "CC",
+        "expected_score_min": 700,
+        "expected_estado": "APROBADO"
+      }
+    },
+    {
+      "id": "TC-BC-002",
+      "scenario": "Cliente con deudas activas pero al día",
+      "priority": "P0 - Crítica",
+      "status": "Automatizado",
+      "file": "test_bureau_happy_path.py",
+      "function": "test_tc_bc_002_cliente_deudas_activas_al_dia",
+      "markers": ["critical", "regression", "integration"],
+      "preconditions": [
+        "API Bureau disponible",
+        "Cliente tiene préstamos vigentes",
+        "Sin moras actuales"
+      ],
+      "steps": [
+        "Consultar cliente con préstamos activos",
+        "Verificar detalle de obligaciones",
+        "Validar estado de pagos"
+      ],
+      "expected_result": {
+        "status_code": 200,
+        "score": "650-699",
+        "estado": "REVISAR",
+        "deudas_activas": true,
+        "monto_deuda_visible": true
+      },
+      "test_data": {
+        "documento": "2345678901",
+        "tipo_documento": "CC",
+        "expected_score_min": 650,
+        "expected_score_max": 699,
+        "expected_estado": "REVISAR",
+        "expected_deuda": 50000000
+      }
+    },
+    {
+      "id": "TC-BC-003",
+      "scenario": "Cliente con mora actual",
+      "priority": "P0 - Crítica",
+      "status": "Automatizado",
+      "file": "test_bureau_happy_path.py",
+      "function": "test_tc_bc_003_cliente_con_mora_actual",
+      "markers": ["critical", "regression", "integration"],
+      "preconditions": [
+        "Cliente registrado",
+        "Cliente tiene pagos vencidos"
+      ],
+      "steps": [
+        "Consultar cliente moroso",
+        "Verificar días de mora",
+        "Validar alertas de riesgo"
+      ],
+      "expected_result": {
+        "status_code": 200,
+        "score": "<500",
+        "estado": "RECHAZADO",
+        "dias_mora": ">0",
+        "alertas_riesgo": true
+      },
+      "test_data": {
+        "documento": "3456789012",
+        "tipo_documento": "CC",
+        "expected_score_max": 500,
+        "expected_estado": "RECHAZADO",
+        "expected_dias_mora_min": 1
+      }
+    },
+    {
+      "id": "TC-BC-004",
+      "scenario": "Cliente en lista de riesgo CIFIN",
+      "priority": "P0 - Crítica",
+      "status": "Automatizado",
+      "file": "test_bureau_happy_path.py",
+      "function": "test_tc_bc_004_cliente_en_lista_cifin",
+      "markers": ["critical", "regression", "integration"],
+      "preconditions": [
+        "Cliente reportado en CIFIN",
+        "API Bureau disponible"
+      ],
+      "steps": [
+        "Consultar documento reportado",
+        "Verificar flag de lista negra",
+        "Validar razón del reporte"
+      ],
+      "expected_result": {
+        "status_code": 200,
+        "en_cifin": true,
+        "estado": "RECHAZADO",
+        "razon_reporte_visible": true,
+        "bloqueo_automatico": true
+      },
+      "test_data": {
+        "documento": "4567890123",
+        "tipo_documento": "CC",
+        "expected_estado": "RECHAZADO",
+        "expected_en_cifin": true,
+        "expected_razon": "Fraude 2023"
+      }
+    },
+    {
+      "id": "TC-BC-005",
+      "scenario": "Validación documento de identidad inválido",
+      "priority": "P1 - Alta",
+      "status": "Automatizado",
+      "file": "test_bureau_validations.py",
+      "function": "test_tc_bc_005_documento_invalido_caracteres_especiales",
+      "markers": ["high", "validation", "regression"],
+      "preconditions": ["Sistema activo"],
+      "steps": [
+        "Ingresar documento con caracteres especiales",
+        "Enviar request al Bureau"
+      ],
+      "expected_result": {
+        "status_code": 422,
+        "error": "Documento inválido",
+        "no_consulta_bureau": true,
+        "log_validacion": true
+      },
+      "test_data": {
+        "documento": "123-456*789",
+        "tipo_documento": "CC",
+        "expected_status": 422,
+        "expected_error": "Documento inválido"
+      }
+    },
+    {
+      "id": "TC-BC-006",
+      "scenario": "Validación documento con longitud incorrecta",
+      "priority": "P1 - Alta",
+      "status": "Automatizado",
+      "file": "test_bureau_validations.py",
+      "function": "test_tc_bc_006_documento_longitud_incorrecta",
+      "markers": ["high", "validation", "regression"],
+      "preconditions": ["Sistema activo"],
+      "steps": [
+        "Ingresar documento < 6 dígitos",
+        "Enviar solicitud"
+      ],
+      "expected_result": {
+        "status_code": 422,
+        "error": "Longitud inválida",
+        "rango_esperado": "6-12 dígitos"
+      },
+      "test_data": {
+        "documento": "12345",
+        "tipo_documento": "CC",
+        "expected_status": 422,
+        "expected_error": "Longitud inválida"
+      }
+    },
+    {
+      "id": "TC-BC-007",
+      "scenario": "Tipo de documento no válido",
+      "priority": "P1 - Alta",
+      "status": "Automatizado",
+      "file": "test_bureau_validations.py",
+      "function": "test_tc_bc_007_tipo_documento_invalido",
+      "markers": ["high", "validation", "regression"],
+      "preconditions": ["Sistema activo"],
+      "steps": [
+        "Enviar tipo_documento no soportado",
+        "Intentar consulta"
+      ],
+      "expected_result": {
+        "status_code": 422,
+        "error": "Tipo documento no válido",
+        "tipos_validos": ["CC", "CE", "NIT", "PAS"]
+      },
+      "test_data": {
+        "documento": "1234567890",
+        "tipo_documento": "XXX",
+        "expected_status": 422,
+        "expected_error": "Tipo documento no válido"
+      }
+    },
+    {
+      "id": "TC-BC-008",
+      "scenario": "Servicio Bureau caído (timeout 5 segundos)",
+      "priority": "P0 - Crítica",
+      "status": "Automatizado",
+      "file": "test_bureau_errors.py",
+      "function": "test_tc_bc_008_timeout_5_segundos",
+      "markers": ["critical", "timeout", "regression"],
+      "preconditions": [
+        "API Bureau no disponible",
+        "Timeout configurado en 5s"
+      ],
+      "steps": [
+        "Intentar consulta",
+        "Esperar timeout",
+        "Verificar manejo de error"
+      ],
+      "expected_result": {
+        "status_code": [503, 504, 408],
+        "error": "Bureau no disponible",
+        "retry_after": "30s",
+        "log_incidencia": true
+      },
+      "test_data": {
+        "documento": "5678901234",
+        "tipo_documento": "CC",
+        "simular": "timeout"
+      }
+    },
+    {
+      "id": "TC-BC-009",
+      "scenario": "Respuesta inválida del Bureau",
+      "priority": "P1 - Alta",
+      "status": "Automatizado",
+      "file": "test_bureau_errors.py",
+      "function": "test_tc_bc_009_respuesta_invalida_del_bureau",
+      "markers": ["high", "regression"],
+      "preconditions": [
+        "Bureau retorna JSON malformado",
+        "API activa"
+      ],
+      "steps": [
+        "Consultar cliente",
+        "Bureau retorna respuesta corrupta",
+        "Validar parseo"
+      ],
+      "expected_result": {
+        "status_code": 502,
+        "error": "Respuesta inválida del Bureau",
+        "no_procesa_solicitud": true,
+        "alerta_sistemas": true
+      },
+      "test_data": {
+        "documento": "8888888888",
+        "tipo_documento": "CC",
+        "simular": "invalid_json"
+      }
+    },
+    {
+      "id": "TC-BC-010",
+      "scenario": "Cliente extranjero con pasaporte",
+      "priority": "P1 - Alta",
+      "status": "Automatizado",
+      "file": "test_bureau_edge_cases.py",
+      "function": "test_tc_bc_010_cliente_extranjero_pasaporte",
+      "markers": ["high", "edge_case", "integration"],
+      "preconditions": [
+        "Cliente no residente",
+        "Documento tipo PAS"
+      ],
+      "steps": [
+        "Ingresar pasaporte extranjero",
+        "Consultar Bureau",
+        "Verificar validación internacional"
+      ],
+      "expected_result": {
+        "status_code": 200,
+        "score": null,
+        "sin_historial_local": true,
+        "mensaje": "Consulta internacional requerida"
+      },
+      "test_data": {
+        "documento": "AB123456",
+        "tipo_documento": "PAS",
+        "expected_status": 200,
+        "expected_score": null,
+        "expected_sin_historial_local": true
+      }
+    },
+    {
+      "id": "TC-BC-011",
+      "scenario": "Cliente sin historial crediticio",
+      "priority": "P1 - Alta",
+      "status": "Automatizado",
+      "file": "test_bureau_edge_cases.py",
+      "function": "test_tc_bc_011_cliente_sin_historial_crediticio",
+      "markers": ["high", "edge_case", "integration"],
+      "preconditions": [
+        "Cliente registrado por primera vez",
+        "Sin préstamos previos"
+      ],
+      "steps": [
+        "Consultar nuevo cliente",
+        "Verificar respuesta sin datos"
+      ],
+      "expected_result": {
+        "status_code": 200,
+        "score": null,
+        "historial_encontrado": false,
+        "estado": "REQUIERE_ANALISIS_MANUAL",
+        "datos_demograficos": true
+      },
+      "test_data": {
+        "documento": "6789012345",
+        "tipo_documento": "CC",
+        "expected_status": 200,
+        "expected_score": null,
+        "expected_historial_encontrado": false,
+        "expected_estado": "REQUIERE_ANALISIS_MANUAL"
+      }
+    },
+    {
+      "id": "TC-BC-012",
+      "scenario": "Documento duplicado en consulta simultánea",
+      "priority": "P2 - Media",
+      "status": "Automatizado",
+      "file": "test_bureau_edge_cases.py",
+      "function": "test_tc_bc_012_documento_duplicado_consulta_simultanea",
+      "markers": ["medium", "edge_case", "integration"],
+      "preconditions": [
+        "Dos oficiales consultan mismo cliente",
+        "Ventana < 1 segundo"
+      ],
+      "steps": [
+        "Usuario A consulta documento",
+        "Usuario B consulta mismo documento",
+        "Verificar control de concurrencia"
+      ],
+      "expected_result": {
+        "status_code_ambos": 200,
+        "misma_informacion": true,
+        "log_consulta_duplicada": true,
+        "no_doble_cobro": true
+      },
+      "test_data": {
+        "documento": "7890123456",
+        "tipo_documento": "CC",
+        "consultas": "paralelas"
+      }
+    },
+    {
+      "id": "TC-BC-013",
+      "scenario": "Consulta histórica - Obtener última consulta",
+      "priority": "P2 - Media",
+      "status": "Automatizado",
+      "file": "test_bureau_edge_cases.py",
+      "function": "test_tc_bc_013_consulta_historica_cache",
+      "markers": ["medium", "edge_case", "integration"],
+      "preconditions": [
+        "Cliente consultado previamente",
+        "GET /api/bureau/{cliente_id}"
+      ],
+      "steps": [
+        "Realizar consulta inicial",
+        "Llamar endpoint de historial",
+        "Validar datos en caché"
+      ],
+      "expected_result": {
+        "status_code": 200,
+        "mismos_datos": true,
+        "timestamp_consulta": true,
+        "no_genera_cargo": true
+      },
+      "test_data": {
+        "cliente_id": "550e8400-e29b-41d4-a716-446655440000",
+        "documento": "8901234567",
+        "tipo_documento": "CC"
+      }
+    },
+    {
+      "id": "TC-BC-014",
+      "scenario": "Cliente con score límite (edge case 600)",
+      "priority": "P1 - Alta",
+      "status": "Automatizado",
+      "file": "test_bureau_edge_cases.py",
+      "function": "test_tc_bc_014_cliente_score_limite_600",
+      "markers": ["high", "edge_case", "integration"],
+      "preconditions": [
+        "Cliente en score frontera",
+        "Política: aprobación manual >= 600"
+      ],
+      "steps": [
+        "Consultar cliente score exacto 600",
+        "Verificar decisión automática"
+      ],
+      "expected_result": {
+        "status_code": 200,
+        "score": 600,
+        "estado": "REVISAR",
+        "requiere_aprobacion_gerencia": true,
+        "flag_score_limite": true
+      },
+      "test_data": {
+        "documento": "8901234567",
+        "tipo_documento": "CC",
+        "expected_score": 600,
+        "expected_estado": "REVISAR",
+        "expected_requiere_gerencia": true
+      }
+    },
+    {
+      "id": "TC-BC-015",
+      "scenario": "Validación campo vacío (documento null)",
+      "priority": "P1 - Alta",
+      "status": "Automatizado",
+      "file": "test_bureau_errors.py",
+      "function": "test_tc_bc_015_campo_documento_null",
+      "markers": ["high", "validation", "regression"],
+      "preconditions": ["Request sin documento"],
+      "steps": [
+        "Enviar request con documento vacío",
+        "Validar rechazo"
+      ],
+      "expected_result": {
+        "status_code": 422,
+        "error": "Campo requerido: documento",
+        "validacion_previa": true,
+        "mensaje_user_friendly": true
+      },
+      "test_data": {
+        "documento": null,
+        "tipo_documento": "CC",
+        "expected_status": 422,
+        "expected_error": "Campo requerido"
+      }
+    }
+  ],
+  "additional_tests": [
+    {
+      "id": "TC-BC-005-A",
+      "scenario": "Documento vacío (string vacío)",
+      "priority": "P1 - Alta",
+      "file": "test_bureau_validations.py",
+      "function": "test_tc_bc_005_documento_vacio"
+    },
+    {
+      "id": "TC-BC-006-A",
+      "scenario": "Documento solo espacios",
+      "priority": "P1 - Alta",
+      "file": "test_bureau_validations.py",
+      "function": "test_tc_bc_006_documento_solo_espacios"
+    },
+    {
+      "id": "TC-BC-007-A",
+      "scenario": "Tipo documento vacío",
+      "priority": "P1 - Alta",
+      "file": "test_bureau_validations.py",
+      "function": "test_tc_bc_007_tipo_documento_vacio"
+    },
+    {
+      "id": "TC-BC-008-A",
+      "scenario": "Verificar lógica de retry",
+      "priority": "P1 - Alta",
+      "file": "test_bureau_errors.py",
+      "function": "test_tc_bc_008_verificar_retry_logic"
+    },
+    {
+      "id": "TC-BC-009-A",
+      "scenario": "Manejo campo faltante en respuesta",
+      "priority": "P1 - Alta",
+      "file": "test_bureau_errors.py",
+      "function": "test_tc_bc_009_manejo_campo_faltante_en_respuesta"
+    },
+    {
+      "id": "TC-BC-014-A",
+      "scenario": "Scores frontera múltiples",
+      "priority": "P2 - Media",
+      "file": "test_bureau_edge_cases.py",
+      "function": "test_tc_bc_014_scores_frontera"
+    }
+  ],
+  "summary": {
+    "total_principal": 15,
+    "total_adicional": 6,
+    "total_general": 21,
+    "by_priority": {
+      "P0": 5,
+      "P1": 10,
+      "P2": 3,
+      "additional": 3
+    },
+    "by_file": {
+      "test_bureau_happy_path.py": 4,
+      "test_bureau_validations.py": 6,
+      "test_bureau_errors.py": 5,
+      "test_bureau_edge_cases.py": 6
+    },
+    "by_marker": {
+      "critical": 5,
+      "high": 10,
+      "medium": 3,
+      "smoke": 4,
+      "regression": 13,
+      "integration": 10,
+      "validation": 9,
+      "edge_case": 6,
+      "timeout": 1
+    }
+  },
+  "execution_commands": {
+    "all_tests": "pytest",
+    "critical_only": "pytest -m critical",
+    "critical_and_high": "pytest -m \"critical or high\"",
+    "regression_suite": "pytest -m regression",
+    "smoke_tests": "pytest -m smoke",
+    "verbose": "pytest -v",
+    "with_report": "pytest --html=report.html --self-contained-html"
+  }
+}

@@ -1,0 +1,16 @@
+Test ID,Test Name,Status,Duration (s),Scenario,Expected Result,Actual Result,Error Message,Timestamp
+test_01_transferencia_exitosa_path_feliz,test_01_transferencia_exitosa_path_feliz,PASS,4.093,,,Test ejecutado exitosamente según lo esperado,,2025-12-10T12:30:53.620260
+test_02_excede_limite_diario,test_02_excede_limite_diario,PASS,4.099,,,Test ejecutado exitosamente según lo esperado,,2025-12-10T12:30:57.744829
+test_03_excede_limite_mensual,test_03_excede_limite_mensual,PASS,4.072,,,Test ejecutado exitosamente según lo esperado,,2025-12-10T12:31:01.820068
+test_04_saldo_insuficiente,test_04_saldo_insuficiente,PASS,4.062,,,Test ejecutado exitosamente según lo esperado,,2025-12-10T12:31:05.885481
+test_05_otp_invalido_para_monto_alto,test_05_otp_invalido_para_monto_alto,PASS,4.073,,,Test ejecutado exitosamente según lo esperado,,2025-12-10T12:31:09.962333
+test_06_transferencia_en_mantenimiento,test_06_transferencia_en_mantenimiento,SKIP,2.033,,,"Test omitido: ('C:\\Users\\1577089\\Desktop\\CapacitacionIA-Banistmo\\CapacitacionIA-Banistmo\\Clase2\\Ejemplo2_TransferenciaBancaria\\tests\\test_transferencias.py', 103, 'Skipped: Para ejecutar este test exponga la cabecera de forzado: set FORCE_MAINTENANCE=1')",,2025-12-10T12:31:11.999117
+test_07_cuenta_destino_invalida,test_07_cuenta_destino_invalida,PASS,4.064,,,Test ejecutado exitosamente según lo esperado,,2025-12-10T12:31:16.066802
+test_08_edge_transfer_0_01,test_08_edge_transfer_0_01,PASS,4.075,,,Test ejecutado exitosamente según lo esperado,,2025-12-10T12:31:20.148619
+test_09_edge_monto_negativo,test_09_edge_monto_negativo,PASS,4.102,,,Test ejecutado exitosamente según lo esperado,,2025-12-10T12:31:24.272957
+test_10_edge_decimales_excesivos,test_10_edge_decimales_excesivos,PASS,4.099,,,Test ejecutado exitosamente según lo esperado,,2025-12-10T12:31:28.455428
+test_11_concurrencia_dos_transferencias_agotan_saldo,test_11_concurrencia_dos_transferencias_agotan_saldo,PASS,6.13,,,Test ejecutado exitosamente según lo esperado,,2025-12-10T12:31:34.590808
+test_12_cuenta_origen_bloqueada,test_12_cuenta_origen_bloqueada,SKIP,2.011,,,"Test omitido: ('C:\\Users\\1577089\\Desktop\\CapacitacionIA-Banistmo\\CapacitacionIA-Banistmo\\Clase2\\Ejemplo2_TransferenciaBancaria\\tests\\test_transferencias.py', 180, 'Skipped: Para ejecutar este test defina BLOCKED_ACCOUNT en el entorno')",,2025-12-10T12:31:36.620379
+test_13_origen_equals_destino,test_13_origen_equals_destino,PASS,4.064,,,Test ejecutado exitosamente según lo esperado,,2025-12-10T12:31:40.687137
+test_14_rate_limit_alta_frecuencia,test_14_rate_limit_alta_frecuencia,PASS,22.43,,,Test ejecutado exitosamente según lo esperado,,2025-12-10T12:32:03.120100
+test_15_sin_autenticacion_token_expirado,test_15_sin_autenticacion_token_expirado,PASS,4.081,,,Test ejecutado exitosamente según lo esperado,,2025-12-10T12:32:07.205524
